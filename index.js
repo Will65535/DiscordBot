@@ -69,6 +69,7 @@ async function reactionEvent(reaction, user, remove) {
     var result = remove ? message_.split(newline+userString).join("") : message_ + newline + userString;
 
     result = await validate(reaction, result);
+    result = result.split("\n[object Object]").join("");
 
     try {
         message.edit(result);
@@ -109,7 +110,6 @@ async function validate(reaction, message) {
                 break;
             }
         }
-        content = content.split("\n[object Object]").join("");
         if (settings.debug) {
             console.log("size: "+size);
             console.log("matches: "+matches);
