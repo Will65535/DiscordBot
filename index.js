@@ -14,7 +14,7 @@ function handleCommand(message) {
     console.log(rawMessage);
     switch (action) {
         case "game":
-            var gameFilter = "**__"+rawMessage.substring(4).split("_").join("").split("*").join("").toUpperCase()+"__**";
+            var gameFilter = "**__"+rawMessage.substring(4).split("_").join("").split("*").join("").trim().toUpperCase()+"__**";
             message.channel.send(gameFilter).then(
                 function (message) {
                     message
