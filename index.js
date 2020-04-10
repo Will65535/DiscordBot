@@ -81,12 +81,16 @@ async function reactionEvent(reaction, user, remove) {
 
 async function validate(oldMessage, newMessage) {
     try {
-        var reaction = newMessage.reactions.filter(r => r.emoji.id == settings.green_tick).first();
-        var size = reaction.count;
         if (newMessage.partial) {
             await newMessage.fetch();
         }
+        var reaction = newMessage.reactions.cache.first();
+        if (reaction.partial) {
+            await reaction.fetch();
+        }
         var content = newMessage.content;
+        var size = reaction.count;
+       // var matches = content.match()
         console.log("size: "+size);
         console.log("content: "+content);
     } catch (error) {
