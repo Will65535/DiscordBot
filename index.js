@@ -96,8 +96,13 @@ client.on("message", message => {
 
 client.on("ready", () => {
     console.log("Starting...");
-    let channel = client.channels.fetch(settings.channel, true);
-    channel.fetchMessages({ limit: 1024 }).then(channel => console.log(channel.messages.size));
+    try {
+        let channel = client.channels.fetch(settings.channel, true);
+        //channel.fetchMessages({ limit: 1024 }).then(channel => console.log(channel.messages.size));
+    } catch (error) {
+        console.log(error);
+        client.destroy();
+    }
 });
 
 client.on("messageReactionAdd", addReaction);
