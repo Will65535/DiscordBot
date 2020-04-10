@@ -91,6 +91,10 @@ async function validate(reaction, message) {
             return message;
         }
 
+        if (reaction.partial) {
+            await reaction.fetch();
+        }
+
         var users = reaction.users.cache.array();
         var user;
         for (var index = 0; index < users.length; index++) {
