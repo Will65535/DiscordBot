@@ -68,6 +68,8 @@ async function reactionEvent(reaction, user, remove) {
     var newline = "\n";
     var result = remove ? message_.split(newline+userString).join("") : message_ + newline + userString;
 
+    result = validate(reaction, result);
+
     try {
         message.edit(result);
     } catch (error) {
@@ -79,24 +81,17 @@ async function reactionEvent(reaction, user, remove) {
     }
 }
 
-async function validate(oldMessage, newMessage) {
+async function validate(reaction, message) {
     try {
-        if (newMessage.partial) {
-            await newMessage.fetch();
-        }
-        var reaction = newMessage.reactions.cache.first();
-        if (reaction.partial) {
-            await reaction.fetch();
-        }
-        var content = newMessage.content;
+        var content = message;
         var size = reaction.count - 1;
         var matches = (content.match(/<@/g) || []).length;
 
         if (matches == size) {
-            return;
+            return message;
         }
 
-        var users = newMessage.reactions.cache.array();
+        var users = reaction.cache.array();
         var user;
         for (var index = 0; index < users.length; index++) {
             user = users[index];
@@ -110,15 +105,16 @@ async function validate(oldMessage, newMessage) {
             }
         }
         content = content.split("\n[object Object]").join("");
-        newMessage.edit(content);
         if (settings.debug) {
             console.log("size: "+size);
             console.log("matches: "+matches);
             console.log("content: "+content);
         }
+        return content;
     } catch (error) {
         console.log(error);
     }
+    return message;
 }
 
 client.on("message", message => {
@@ -151,7 +147,6 @@ client.on("ready", () => {
     }
 });
 
-client.on("messageUpdate", validate);
 client.on("messageReactionAdd", addReaction);
 client.on("messageReactionRemove", removeReaction);
 client.login(config.token);
