@@ -79,6 +79,21 @@ async function reactionEvent(reaction, user, remove) {
     }
 }
 
+async function validate(oldMessage, newMessage) {
+    try {
+        var reaction = newMessage.reactions.filter(r => r.emoji.id == settings.green_tick).first();
+        var size = reaction.count;
+        if (newMessage.partial) {
+            await newMessage.fetch();
+        }
+        var content = newMessage.content;
+        console.log("size: "+size);
+        console.log("content: "+content);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 client.on("message", message => {
     if (message.channel.id == settings.channel && message.content.substring(0, settings.prefix.length) == settings.prefix) {
         try {
@@ -109,6 +124,7 @@ client.on("ready", () => {
     }
 });
 
+client.on("messageUpdate", validate);
 client.on("messageReactionAdd", addReaction);
 client.on("messageReactionRemove", removeReaction);
 client.login(config.token);
