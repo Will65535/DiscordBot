@@ -2,19 +2,19 @@ const discord = require("discord.js");
 const config = require("./config.json");
 const client = new discord.Client({ partials: ["MESSAGE", "CHANNEL", "REACTION"]});
 const channel = 697787610570948645;
-const prefix = "~~";
+const prefix = "!";
 const green_tick = "698194459661303850";
 const red_tick = "698194479336914994";
 
 function handleCommand(message) {
-    var rawMessage = message.content.substring(2);
+    var rawMessage = message.content.substring(prefix.length);
     var args = rawMessage.split(" ");
     var action = args[0];
     console.log(action);
     console.log(rawMessage);
     switch (action) {
         case "game":
-            var gameFilter = "**__"+rawMessage.substring(4).split("_").join("").split("*").join("").trim().toUpperCase()+"__**";
+            var gameFilter = "**__"+rawMessage.substring(action.length).split("_").join("").split("*").join("").trim().toUpperCase()+"__**";
             message.channel.send(gameFilter).then(
                 function (message) {
                     message
@@ -74,7 +74,7 @@ function removeReaction(reaction, user) {
 }
 
 client.on("message", message => {
-    if (message.channel.id == channel && message.content.substring(0, 2) == prefix) {
+    if (message.channel.id == channel && message.content.substring(0, prefix.length) == prefix) {
         try {
             handleCommand(message);
         } catch (error) {
