@@ -7,8 +7,10 @@ function handleCommand(message) {
     var rawMessage = message.content.substring(prefix.length);
     var args = rawMessage.split(" ");
     var action = args[0];
-    console.log(action);
-    console.log(rawMessage);
+    if(settings.debug) {
+        console.log(action);
+        console.log(rawMessage);
+    }
     switch (action) {
         case "game":
             var gameFilter = "**__"+rawMessage.substring(action.length).split("_").join("").split("*").join("").trim().toUpperCase()+"__**";
@@ -33,12 +35,10 @@ function handleCommand(message) {
 }
 
 function addReaction(reaction, user) {
-    const reaction_ = reaction;
     reactionEvent(reaction_, user, false);
 }
 
 function removeReaction(reaction, user) {
-    const reaction_ = reaction;
     reactionEvent(reaction_, user, true);
 }
 
@@ -92,6 +92,12 @@ client.on("message", message => {
         return;
     }
     message.delete();
+});
+
+client.on("ready", () => {
+    console.log("Starting...");
+    let channel = ChannelManager.fetch(settings.channel, true);
+    channel.fetchMessages({ limit: 1024 }).then(channel => console.log(channel.messages.size));
 });
 
 client.on("messageReactionAdd", addReaction);
