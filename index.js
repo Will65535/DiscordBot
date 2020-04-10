@@ -96,7 +96,7 @@ client.on("message", message => {
 
 client.on("ready", () => {
     console.log("Starting...");
-    let channel = ChannelManager.fetch(settings.channel, true);
+    let channel = client.channels.fetch(settings.channel, true);
     channel.fetchMessages({ limit: 1024 }).then(channel => console.log(channel.messages.size));
 });
 
