@@ -89,11 +89,29 @@ async function validate(oldMessage, newMessage) {
             await reaction.fetch();
         }
         var content = newMessage.content;
-        var size = reaction.count;
+        var size = reaction.count - 1;
         var matches = (content.match(/<@/g) || []).length;
-        console.log("size: "+size);
-        console.log("matches: "+matches);
-        console.log("content: "+content);
+        if (matches != size) {
+            var users = newMessage.reactions.cache.array();
+            var user;
+            for (var index = 0; index < users.length; index++) {
+                user = users[index];
+                if (content.includes(user.toString())) {
+                    continue;
+                }
+                content += "\n" + user.toString();
+                matches++;
+                if (matches == size) {
+                    break;
+                }
+            }
+        }
+        newMessage.edit(content);
+        if (settings.debug) {
+            console.log("size: "+size);
+            console.log("matches: "+matches);
+            console.log("content: "+content);
+        }
     } catch (error) {
         console.log(error);
     }
