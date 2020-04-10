@@ -80,7 +80,7 @@ async function reactionEvent(reaction, user, remove) {
 }
 
 client.on("message", message => {
-    if (message.channel.id == channel && message.content.substring(0, settings.prefix.length) == settings.prefix) {
+    if (message.channel.id == settings.channel && message.content.substring(0, settings.prefix.length) == settings.prefix) {
         try {
             handleCommand(message);
         } catch (error) {
