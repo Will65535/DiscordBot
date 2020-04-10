@@ -48,7 +48,7 @@ async function reactionEvent(reaction, user, remove) {
     }
 
     if (reaction.message.partial) {
-        await messageReaction.message.fetch();
+        await reaction.message.fetch();
     }
 
     const { message, emoji } = reaction;
