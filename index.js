@@ -83,16 +83,16 @@ async function reactionEvent(reaction, user, remove) {
 
 async function validate(reaction, message) {
     try {
+        if (reaction.partial) {
+            await reaction.fetch();
+        }
+        
         var content = message;
         var size = reaction.count - 1;
         var matches = (content.match(/<@/g) || []).length;
 
         if (matches == size) {
             return message;
-        }
-
-        if (reaction.partial) {
-            await reaction.fetch();
         }
 
         var users = reaction.users.cache.array();
