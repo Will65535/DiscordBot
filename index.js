@@ -84,6 +84,9 @@ client.on("message", message => {
             }
         }
     } else {
+        if (!message.author.bot) {
+            return;
+        }
         message.delete();
     }
 });
