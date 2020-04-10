@@ -90,7 +90,7 @@ async function validate(oldMessage, newMessage) {
         }
         var content = newMessage.content;
         var size = reaction.count;
-        var matches = content.match(/<@/g | []).length();
+        var matches = content.match(/<@/g | []).length;
         console.log("size: "+size);
         console.log("matches: "+matches);
         console.log("content: "+content);
