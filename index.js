@@ -68,7 +68,7 @@ async function reactionEvent(reaction, user, remove) {
     var newline = "\n";
     var result = remove ? message_.split(newline+userString).join("") : message_ + newline + userString;
 
-    result = validate(reaction, result);
+    result = await validate(reaction, result);
 
     try {
         message.edit(result);
@@ -100,7 +100,7 @@ async function validate(reaction, message) {
         var user;
         for (var index = 0; index < users.length; index++) {
             user = users[index];
-            if (content.includes(user.toString())) {
+            if (content.includes(user.toString()) || user.bot) {
                 continue;
             }
             content += "\n" + user.toString();
