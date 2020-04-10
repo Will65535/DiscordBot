@@ -1,10 +1,7 @@
 const discord = require("discord.js");
 const config = require("./config.json");
+const settings = require("./settings.json");
 const client = new discord.Client({ partials: ["MESSAGE", "CHANNEL", "REACTION"]});
-const channel = 697787610570948645;
-const prefix = "!";
-const green_tick = "698194459661303850";
-const red_tick = "698194479336914994";
 
 function handleCommand(message) {
     var rawMessage = message.content.substring(prefix.length);
@@ -36,59 +33,63 @@ function handleCommand(message) {
 }
 
 function addReaction(reaction, user) {
-    if (user.bot) {
-        return;
-    }
-
-    const { message, emoji } = reaction;
-    var message_ = message.content;
-
-    if (emoji.id == green_tick && !message_.includes(user.toString())) {
-        try {
-            message.edit(message_ + "\n" + user.toString());
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
-    console.log("[EMOJI ID] "+emoji.id+" [EMOJI NAME] "+emoji.name);
+    reactionEvent(reaction, user, false);
 }
 
 function removeReaction(reaction, user) {
+    reactionEvent(reaction, user, true);
+}
+
+function reactionEvent(reaction, user, remove) {
     if (user.bot) {
         return;
     }
 
     const { message, emoji } = reaction;
-    var message_ = message.content;
 
-    if (emoji.id == green_tick && message_.includes(user.toString())) {
-        try {
-            message.edit(message_.split("\n"+user.toString()).join(""));
-        } catch (error) {
-            console.log(error.message);
-        }
+    if (emoji.id != settings.green_tick) {
+        return;
     }
 
-    console.log("[EMOJI ID] "+emoji.id+" [EMOJI NAME] "+emoji.name);
+    var message_ = message.content;
+    var userString = user.toString();
+    var includes = message_.includes(userString);
+
+    if (includes != remove) {
+        return;
+    }
+
+    var newline = "\n";
+    var result = remove ? message_.split(newline+userString).join("") : message_ + newline + userString;
+
+    try {
+        message.edit(result);
+    } catch (error) {
+        console.log(error.message);
+    }
+
+    if (settings.debug) {
+        console.log("[EMOJI ID] "+emoji.id+" [EMOJI NAME] "+emoji.name);
+    }
 }
 
 client.on("message", message => {
-    if (message.channel.id == channel && message.content.substring(0, prefix.length) == prefix) {
+    if (message.channel.id == channel && message.content.substring(0, settings.prefix.length) == settings.prefix) {
         try {
             handleCommand(message);
         } catch (error) {
-            console.log("[ERROR] "+error.message);
-            if (message.content === "~~dc") {
+            console.log(error.message);
+            if (message.content === settings.prefix+"dc") {
                 client.destroy();
             }
         }
-    } else {
-        if (message.author.bot) {
-            return;
-        }
-        message.delete();
+        return;
     }
+
+    if (message.author.bot) {
+        return;
+    }
+    message.delete();
 });
 
 client.on("messageReactionAdd", addReaction);

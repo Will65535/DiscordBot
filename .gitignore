@@ -3,3 +3,4 @@
 # Not
 !.gitignore
 !*.js
+!settings.json
