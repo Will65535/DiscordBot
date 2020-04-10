@@ -4,7 +4,7 @@ const settings = require("./settings.json");
 const client = new discord.Client({ partials: ["MESSAGE", "CHANNEL", "REACTION"]});
 
 function handleCommand(message) {
-    var rawMessage = message.content.substring(prefix.length);
+    var rawMessage = message.content.substring(settings.prefix.length);
     var args = rawMessage.split(" ");
     var action = args[0];
     if(settings.debug) {
@@ -17,7 +17,7 @@ function handleCommand(message) {
             message.channel.send(gameFilter).then(
                 function (message) {
                     message
-                        .react(message.guild.emojis.cache.get(green_tick))
+                        .react(message.guild.emojis.cache.get(settings.green_tick))
                         .catch(() => console.error("Failed to react."));
                 }
             ).catch(console.error);
