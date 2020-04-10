@@ -91,21 +91,25 @@ async function validate(oldMessage, newMessage) {
         var content = newMessage.content;
         var size = reaction.count - 1;
         var matches = (content.match(/<@/g) || []).length;
-        if (matches != size) {
-            var users = newMessage.reactions.cache.array();
-            var user;
-            for (var index = 0; index < users.length; index++) {
-                user = users[index];
-                if (content.includes(user.toString())) {
-                    continue;
-                }
-                content += "\n" + user.toString();
-                matches++;
-                if (matches == size) {
-                    break;
-                }
+
+        if (matches == size) {
+            return;
+        }
+
+        var users = newMessage.reactions.cache.array();
+        var user;
+        for (var index = 0; index < users.length; index++) {
+            user = users[index];
+            if (content.includes(user.toString())) {
+                continue;
+            }
+            content += "\n" + user.toString();
+            matches++;
+            if (matches == size) {
+                break;
             }
         }
+        content = content.split("\n[object Object]").join("");
         newMessage.edit(content);
         if (settings.debug) {
             console.log("size: "+size);
