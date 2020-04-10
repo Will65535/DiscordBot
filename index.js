@@ -86,7 +86,7 @@ async function validate(reaction, message) {
         if (reaction.partial) {
             await reaction.fetch();
         }
-        
+
         var content = message;
         var size = reaction.count - 1;
         var matches = (content.match(/<@/g) || []).length;
@@ -95,7 +95,8 @@ async function validate(reaction, message) {
             return message;
         }
 
-        var users = reaction.users.cache.array();
+        var users = await reaction.users.fetch();
+        users = users.array();
         var user;
         for (var index = 0; index < users.length; index++) {
             user = users[index];
