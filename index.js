@@ -34,17 +34,21 @@ function handleCommand(message) {
     }
 }
 
-function addReaction(reaction, user) {
+async function addReaction(reaction, user) {
     reactionEvent(reaction, user, false);
 }
 
-function removeReaction(reaction, user) {
+async function removeReaction(reaction, user) {
     reactionEvent(reaction, user, true);
 }
 
-function reactionEvent(reaction, user, remove) {
+async function reactionEvent(reaction, user, remove) {
     if (user.bot) {
         return;
+    }
+
+    if (reaction.message.partial) {
+        await messageReaction.message.fetch();
     }
 
     const { message, emoji } = reaction;
