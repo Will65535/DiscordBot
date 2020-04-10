@@ -33,28 +33,22 @@ function handleCommand(message) {
 }
 
 function addReaction(reaction, user) {
-    reactionEvent(reaction, user, false);
+    const { message, emoji } = reaction;
+    reactionEvent(message, emoji, user, false);
 }
 
 function removeReaction(reaction, user) {
-    reactionEvent(reaction, user, true);
+    const { message, emoji } = reaction;
+    reactionEvent(message, emoji, reaction, user, true);
 }
 
-function reactionEvent(reaction, user, remove) {
-    if (user.bot) {
-        return;
-    }
-
-    const { message, emoji } = reaction;
-
-    if (emoji.id != settings.green_tick) {
+function reactionEvent(message, emoji, user, remove) {
+    if (user.bot || emoji.id != settings.green_tick) {
         return;
     }
 
     var message_ = message.content;
     var userString = user.toString();
-    console.log("message "+message_);
-    console.log("user "+userString);
     var includes_ = message_.includes(userString);
 
     if (includes_ != remove) {
