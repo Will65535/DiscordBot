@@ -35,11 +35,11 @@ function handleCommand(message) {
 }
 
 function addReaction(reaction, user) {
-    reactionEvent(reaction_, user, false);
+    reactionEvent(reaction, user, false);
 }
 
 function removeReaction(reaction, user) {
-    reactionEvent(reaction_, user, true);
+    reactionEvent(reaction, user, true);
 }
 
 function reactionEvent(reaction, user, remove) {
