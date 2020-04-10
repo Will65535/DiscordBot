@@ -33,11 +33,13 @@ function handleCommand(message) {
 }
 
 function addReaction(reaction, user) {
-    reactionEvent(reaction, user, false);
+    const reaction_ = reaction;
+    reactionEvent(reaction_, user, false);
 }
 
 function removeReaction(reaction, user) {
-    reactionEvent(reaction, user, true);
+    const reaction_ = reaction;
+    reactionEvent(reaction_, user, true);
 }
 
 function reactionEvent(reaction, user, remove) {
@@ -45,7 +47,7 @@ function reactionEvent(reaction, user, remove) {
         return;
     }
 
-    message, emoji = reaction;
+    const { message, emoji } = reaction;
 
     if (emoji.id != settings.green_tick) {
         return;
