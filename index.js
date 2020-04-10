@@ -40,14 +40,12 @@ function removeReaction(reaction, user) {
     reactionEvent(reaction, user, true);
 }
 
-function reactionEvent() {
-    const {reaction, user, remove} = arguments;
-    
+function reactionEvent(reaction, user, remove) {
     if (user.bot) {
         return;
     }
 
-    const { message, emoji } = reaction;
+    message, emoji = reaction;
 
     if (emoji.id != settings.green_tick) {
         return;
@@ -55,8 +53,6 @@ function reactionEvent() {
 
     var message_ = message.content;
     var userString = user.toString();
-    console.log("message "+message_);
-    console.log("user "+userString);
     var includes_ = message_.includes(userString);
 
     if (includes_ != remove) {
