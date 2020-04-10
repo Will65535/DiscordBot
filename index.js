@@ -53,9 +53,9 @@ function reactionEvent(reaction, user, remove) {
 
     var message_ = message.content;
     var userString = user.toString();
-    var includes = message_.includes(userString);
+    var includes_ = message_.includes(userString);
 
-    if (includes != remove) {
+    if (includes_ != remove) {
         return;
     }
 
