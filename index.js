@@ -20,7 +20,7 @@ function handleCommand(message) {
                         .react(message.guild.emojis.cache.get(settings.green_tick))
                         .catch(() => console.error("Failed to react."));
                 }
-            ).catch(console.error);
+            ).then(() => console.log("Added game "+gameFilter)).catch(console.error);
             message.delete();
         break;
         case "dc":
@@ -68,8 +68,12 @@ async function reactionEvent(reaction, user, remove) {
     var newline = "\n";
     var result = remove ? message_.split(newline+userString).join("") : message_ + newline + userString;
 
-    result = await validate(reaction, result);
+    /*** update & validate */
+    result = await validate(reaction, message, message_, result);
     result = result.split("\n[object Object]").join("");
+
+    /*** role managing ***/
+    await manageRole(user, message, message_, remove);
 
     try {
         message.edit(result);
@@ -82,7 +86,37 @@ async function reactionEvent(reaction, user, remove) {
     }
 }
 
-async function validate(reaction, message) {
+async function manageRole(user, message, message_, remove) {
+    try {
+        var guild = message.guild;
+
+        var title = message_.split("**__")[1].split("__**")[0];
+        title = title.toLowerCase().split(" ").map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
+
+        var roleManager = guild.roles;
+        var role = roleManager.cache.find(role => role.name == title);
+        if (role == undefined) {
+            role = await roleManager.create({
+                data: {
+                    name: title
+                }   
+            });
+            console.log("Created role "+title);
+        }
+        if (role != undefined) {
+            var member = guild.member(user);
+            if (remove) {
+                member.roles.remove(role).then(member => console.log("Removed role " + role.name + " from " + member.displayName)).catch(console.log);
+            } else {
+                member.roles.add(role).then(member => console.log("Added role " + role.name + " to " + member.displayName)).catch(console.log);
+            }
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+async function validate(reaction, messageObject, messageContents, message) {
     try {
         if (reaction.partial) {
             await reaction.fetch();
@@ -101,9 +135,10 @@ async function validate(reaction, message) {
         var user;
         for (var index = 0; index < users.length; index++) {
             user = users[index];
-            if (content.includes(user.toString()) || user.bot) {
+            if (!user || content.includes(user.toString()) || user.bot) {
                 continue;
             }
+            await manageRole(user, messageObject, messageContents, false);
             content += "\n" + user.toString();
             matches++;
             if (matches == size) {
@@ -120,6 +155,31 @@ async function validate(reaction, message) {
         console.log(error);
     }
     return message;
+}
+
+/*** assumes users who can add games are admin ***/
+//TODO no overwrites
+async function onMessageDelete(message) {
+    if (message.partial) {
+        await message.fetch();
+    }
+
+    if (!message.author.bot) {
+        return;
+    }
+
+    var message_ = message.content;
+
+    var title = message_.split("**__")[1].split("__**")[0];
+    title = title.toLowerCase().split(" ").map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
+
+    var guild = message.guild;
+    var roleManager = guild.roles;
+    var role = roleManager.cache.find(role => role.name == title);
+
+    if (role) {
+        role.delete().then(role => console.log("Deleted game " + title + "\nDeleted role " + role.name)).catch(console.log);
+    }
 }
 
 client.on("message", message => {
@@ -154,4 +214,5 @@ client.on("ready", () => {
 
 client.on("messageReactionAdd", addReaction);
 client.on("messageReactionRemove", removeReaction);
+client.on("messageDelete", onMessageDelete);
 client.login(config.token);
