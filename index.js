@@ -75,11 +75,7 @@ async function reactionEvent(reaction, user, remove) {
     /*** role managing ***/
     await manageRole(user, message, message_, remove);
 
-    try {
-        message.edit(result);
-    } catch (error) {
-        console.log(error.message);
-    }
+    message.edit(result).catch(console.log);
 
     if (settings.debug) {
         console.log("[EMOJI ID] "+emoji.id+" [EMOJI NAME] "+emoji.name);
