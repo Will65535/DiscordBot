@@ -3,11 +3,11 @@ This is a basic discord bot (utilising discord.js)
 
 Commands include:
 
-<prefix>game <game_name> - adds a game
+%prefix%game %game_name% - adds a game
 
-<prefix>dc - disconnects the bot
+%prefix%dc - disconnects the bot
 
-<prefix>disconnect - disconnects the bot
+%prefix%disconnect - disconnects the bot
 
 Settings.json
 
