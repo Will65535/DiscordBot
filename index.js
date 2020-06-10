@@ -14,6 +14,8 @@ function handleCommand(message) {
     switch (action) {
         case "game":
             var gameFilter = "**__"+rawMessage.substring(action.length).split("_").join("").split("*").join("").trim().toUpperCase()+"__**";
+            var roleName = gameFilter.split("**__")[1].split("__**")[0];
+            roleName = roleName.toLowerCase().split(" ").map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
             message.channel.send(gameFilter).then(
                 function (message) {
                     message
@@ -21,8 +23,15 @@ function handleCommand(message) {
                         .catch(() => console.error("Failed to react."));
                 }
             ).then(() => console.log("Added game "+gameFilter)).catch(console.error);
+            createChannelFromRole(message.guild, roleName);
             message.delete();
         break;
+        case "output":
+            message.guild.channels.cache.each((channel) => {
+                console.log("Channel Name: "+channel.name);
+                console.log("Channel Parent: "+channel.parentID);
+            });
+            break;
         case "dc":
         case "disconnect":
             message.delete();
@@ -32,6 +41,43 @@ function handleCommand(message) {
             message.delete();
         break;
     }
+}
+
+/*** gets role by name, creates if absent ***/
+async function fetchRole(guild, roleName) {
+    var roleManager = guild.roles;
+    var role = roleManager.cache.find(role => role.name == roleName);
+    if (role == undefined) {
+        role = await roleManager.create({
+            data: {
+                name: roleName
+            }   
+        });
+        console.log("Created role "+roleName);
+    }
+    return role;
+}
+
+async function createChannelFromRole(guild, roleName) {
+    var channelManager = guild.channels;
+
+    var channelName = roleName.toLowerCase().split(" ").join("-");
+    var role = await fetchRole(guild, roleName);
+
+    channelManager.create(channelName, {
+        permissionOverwrites: [
+            {
+                id: guild.roles.everyone.id,
+                deny: ['VIEW_CHANNEL']
+            },
+            {
+                id: role.id,
+                allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'READ_MESSAGE_HISTORY']
+            }
+        ]
+    }).then(
+        channel => channel.setParent(settings.text_channel_parent)
+    ).then(() => console.log("Added channel "+channelName)).catch(console.error);
 }
 
 async function addReaction(reaction, user) {
@@ -89,16 +135,7 @@ async function manageRole(user, message, message_, remove) {
         var title = message_.split("**__")[1].split("__**")[0];
         title = title.toLowerCase().split(" ").map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
 
-        var roleManager = guild.roles;
-        var role = roleManager.cache.find(role => role.name == title);
-        if (role == undefined) {
-            role = await roleManager.create({
-                data: {
-                    name: title
-                }   
-            });
-            console.log("Created role "+title);
-        }
+        var role = fetchRole(guild, title);
         if (role != undefined) {
             var member = guild.member(user);
             if (remove) {
@@ -173,8 +210,16 @@ async function onMessageDelete(message) {
     var roleManager = guild.roles;
     var role = roleManager.cache.find(role => role.name == title);
 
+    var channelManager = guild.channels;
+    var channelName = title.toLowerCase().split(" ").join("-");
+    var channel = await channelManager.cache.find(channel => channel.name == channelName);
+
+    console.log("Deleted game " + title);
     if (role) {
-        role.delete().then(role => console.log("Deleted game " + title + "\nDeleted role " + role.name)).catch(console.log);
+        await role.delete().then(role => console.log("Deleted role " + role.name)).catch(console.log);
+    }
+    if (channel) {
+        await channel.delete().then(channel => console.log("Deleted channel " + channel.name)).catch(console.log);
     }
 }
 
