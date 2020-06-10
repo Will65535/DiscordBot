@@ -224,22 +224,24 @@ async function onMessageDelete(message) {
 }
 
 client.on("message", message => {
-    if (message.channel.id == settings.channel && message.content.substring(0, settings.prefix.length) == settings.prefix) {
-        try {
-            handleCommand(message);
-        } catch (error) {
-            console.log(error.message);
-            if (message.content === settings.prefix+"dc") {
-                client.destroy();
+    if (message.channel.id == settings.channel) {
+        if (message.content.substring(0, settings.prefix.length) == settings.prefix) {
+            try {
+                handleCommand(message);
+            } catch (error) {
+                console.log(error.message);
+                if (message.content === settings.prefix+"dc") {
+                    client.destroy();
+                }
             }
+            return;
         }
-        return;
-    }
 
-    if (message.author.bot) {
-        return;
+        if (message.author.bot) {
+            return;
+        }
+        message.delete();
     }
-    message.delete();
 });
 
 client.on("ready", () => {
