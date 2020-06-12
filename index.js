@@ -135,7 +135,7 @@ async function manageRole(user, message, message_, remove) {
         var title = message_.split("**__")[1].split("__**")[0];
         title = title.toLowerCase().split(" ").map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
 
-        var role = fetchRole(guild, title);
+        var role = await fetchRole(guild, title);
         if (role != undefined) {
             var member = guild.member(user);
             if (remove) {
